@@ -1,25 +1,79 @@
 import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+scene.background = new THREE.Color(0xf2f4f8);
+
+const camera = new THREE.PerspectiveCamera(
+  75,
+  window.innerWidth / window.innerHeight,
+  0.1,
+  1000
+);
+camera.position.set(4, 2.5, 4);
 
 const renderer = new THREE.WebGLRenderer();
-renderer.setSize( window.innerWidth, window.innerHeight );
-document.body.appendChild( renderer.domElement );
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
 
-const geometry = new THREE.BoxGeometry( 1, 1, 1 );
-const material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
-const cube = new THREE.Mesh( geometry, material );
-scene.add( cube );
+const loader = new GLTFLoader();
+const modelUrl = new URL('./scala-piano-terra.glb', import.meta.url).href;
 
-camera.position.z = 5;
+const ambientLight = new THREE.AmbientLight(0xffffff, 1.1);
+scene.add(ambientLight);
 
-function animate( time ) {
+const dirLight = new THREE.DirectionalLight(0xffffff, 1.4);
+dirLight.position.set(6, 10, 8);
+scene.add(dirLight);
 
-  cube.rotation.x = time / 2000;
-  cube.rotation.y = time / 1000;
+const center = new THREE.Vector3();
 
-  renderer.render( scene, camera );
+function fitCameraToObject(object) {
+  const box = new THREE.Box3().setFromObject(object);
+  if (box.isEmpty()) return;
 
+  const size = box.getSize(new THREE.Vector3());
+  box.getCenter(center);
+
+  const maxDim = Math.max(size.x, size.y, size.z);
+  const fov = (camera.fov * Math.PI) / 180;
+  const distance = maxDim / (2 * Math.tan(fov / 2));
+
+  camera.position
+    .copy(center)
+    .add(
+      new THREE.Vector3(1.2, 0.8, 1.2)
+        .normalize()
+        .multiplyScalar(distance * 1.8)
+    );
+  camera.near = Math.max(distance / 100, 0.01);
+  camera.far = distance * 100;
+  camera.lookAt(center);
+  camera.updateProjectionMatrix();
 }
-renderer.setAnimationLoop( animate );
+
+loader.load(
+  modelUrl,
+  function (gltf) {
+    scene.add(gltf.scene);
+    fitCameraToObject(gltf.scene);
+  },
+  undefined,
+  function (error) {
+    console.error(error);
+  }
+);
+
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+function animate() {
+  requestAnimationFrame(animate);
+  renderer.render(scene, camera);
+}
+
+animate();
