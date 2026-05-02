@@ -56,19 +56,139 @@
       }
 
       .viewer-description {
-        position: fixed;
-        top: 132px;
-        left: 16px;
-        z-index: 10;
         margin: 0;
-        width: min(420px, calc(100vw - 32px));
-        padding: 10px 12px;
-        border-radius: 10px;
-        background: rgba(255, 255, 255, 0.92);
         color: #1c2e45;
-        font-size: 14px;
-        line-height: 1.4;
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        line-height: 1.5;
+        font-size: 34px;
+      }
+
+      .viewer-info-button {
+        position: fixed;
+        top: 120px;
+        left: 50px;
+        z-index: 12;
+        display: grid;
+        place-items: center;
+        width: 80px;
+        height: 80px;
+        border: none;
+        border-radius: 999px;
+        background: #0a66cc;
+        color: #fff;
+        font-size: 42px;
+        font-weight: 700;
+        line-height: 1;
+        cursor: pointer;
+        box-shadow: 0 8px 22px rgba(10, 102, 204, 0.35);
+      }
+
+      .viewer-info-button:hover {
+        background: #0a5ab4;
+      }
+
+      .viewer-description-modal {
+        position: fixed;
+        inset: 0;
+        z-index: 20;
+        display: none;
+        align-items: stretch;
+        justify-content: stretch;
+        padding: 0;
+      }
+
+      .viewer-description-modal.open {
+        display: flex;
+      }
+
+      .viewer-description-backdrop {
+        position: absolute;
+        inset: 0;
+        background: rgba(10, 20, 36, 0.7);
+      }
+
+      .viewer-description-panel {
+        position: relative;
+        z-index: 1;
+        width: 100vw;
+        height: 100vh;
+        max-height: none;
+        overflow: auto;
+        border-radius: 0;
+        padding: calc(96px + env(safe-area-inset-top, 0px)) 28px 28px;
+        background: #ffffff;
+        box-shadow: none;
+      }
+
+      .viewer-description-header {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        margin-bottom: 20px;
+      }
+
+      .viewer-description-header h2 {
+        margin: 0;
+        color: #1c2e45;
+        font-size: clamp(24px, 3vw, 34px);
+      }
+
+      .viewer-description-close {
+        position: absolute;
+        top: calc(16px + env(safe-area-inset-top, 0px));
+        right: calc(16px + env(safe-area-inset-right, 0px));
+        width: 64px;
+        height: 64px;
+        display: grid;
+        place-items: center;
+        border: none;
+        border-radius: 999px;
+        background: #d7263d;
+        color: #ffffff;
+        font-size: 42px;
+        font-weight: 700;
+        line-height: 1;
+        padding: 0;
+        cursor: pointer;
+        box-shadow: 0 10px 24px rgba(215, 38, 61, 0.42);
+      }
+
+      .viewer-description-close:hover {
+        background: #bd1f34;
+      }
+
+      @media (max-width: 600px) {
+        .viewer-toolbar {
+          top: 12px;
+          left: 12px;
+          padding: 10px;
+        }
+
+        .viewer-toolbar a {
+          font-size: 13px;
+          padding: 7px 8px;
+        }
+
+        .viewer-info-button {
+          top: 76px;
+          left: 12px;
+          width: 56px;
+          height: 56px;
+          font-size: 28px;
+        }
+
+        .viewer-description-panel {
+          width: 100vw;
+          max-height: none;
+          padding: calc(84px + env(safe-area-inset-top, 0px)) 18px 20px;
+        }
+
+        .viewer-description-close {
+          top: calc(10px + env(safe-area-inset-top, 0px));
+          right: calc(10px + env(safe-area-inset-right, 0px));
+          width: 58px;
+          height: 58px;
+          font-size: 38px;
+        }
       }
     </style>
   </head>
@@ -77,8 +197,38 @@
       <a id="model-link-terrazzo" href="?model=terrazzo">Scala Piano Terra</a>
       <a id="model-link-bagno" href="?model=bagno">Accesso dal Bagno</a>
     </nav>
-    <h1 id="viewer-title" class="viewer-title">Caricamento modello...</h1>
-    <p id="viewer-description" class="viewer-description">Descrizione modello in caricamento...</p>
+    <button
+      id="viewer-info-button"
+      class="viewer-info-button"
+      type="button"
+      aria-label="Mostra descrizione del modello"
+    >
+      i
+    </button>
+    <div
+      id="viewer-description-modal"
+      class="viewer-description-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="viewer-description-title"
+      aria-hidden="true"
+    >
+      <div id="viewer-description-backdrop" class="viewer-description-backdrop"></div>
+      <section class="viewer-description-panel" aria-live="polite">
+        <header class="viewer-description-header">
+          <h2 id="viewer-description-title">Descrizione modello</h2>
+          <button
+            id="viewer-description-close"
+            class="viewer-description-close"
+            type="button"
+            aria-label="Chiudi descrizione"
+          >
+            &times;
+          </button>
+        </header>
+        <p id="viewer-description" class="viewer-description">Descrizione modello in caricamento...</p>
+      </section>
+    </div>
     <script type="module" src="/main.js"></script>
   </body>
 </html>

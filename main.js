@@ -62,6 +62,7 @@ controls.maxDistance = 200;
 const loader = new GLTFLoader();
 let currentModel = null;
 let currentModelKey = getModelKeyFromUrl();
+let lastFocusedElement = null;
 
 const ambientLight = new THREE.AmbientLight(0xffffff, 1.1);
 scene.add(ambientLight);
@@ -72,18 +73,48 @@ scene.add(dirLight);
 
 const center = new THREE.Vector3();
 
+const infoButton = document.getElementById('viewer-info-button');
+const descriptionModal = document.getElementById('viewer-description-modal');
+const descriptionCloseButton = document.getElementById(
+  'viewer-description-close'
+);
+const descriptionBackdrop = document.getElementById(
+  'viewer-description-backdrop'
+);
+
+function openDescriptionModal() {
+  if (!descriptionModal) return;
+  lastFocusedElement = document.activeElement;
+  descriptionModal.classList.add('open');
+  descriptionModal.setAttribute('aria-hidden', 'false');
+  if (descriptionCloseButton instanceof HTMLElement) {
+    descriptionCloseButton.focus();
+  }
+}
+
+function closeDescriptionModal() {
+  if (!descriptionModal) return;
+  descriptionModal.classList.remove('open');
+  descriptionModal.setAttribute('aria-hidden', 'true');
+  if (lastFocusedElement instanceof HTMLElement) {
+    lastFocusedElement.focus();
+  }
+}
+
 function updateUi(modelKey) {
-  const titleElement = document.getElementById('viewer-title');
   const descriptionElement = document.getElementById('viewer-description');
+  const descriptionTitleElement = document.getElementById(
+    'viewer-description-title'
+  );
   const terrazzoLink = document.getElementById('model-link-terrazzo');
   const bagnoLink = document.getElementById('model-link-bagno');
 
-  if (titleElement) {
-    titleElement.textContent = `Vista corrente: ${MODEL_CONFIG[modelKey].title}`;
-  }
-
   if (descriptionElement) {
     descriptionElement.textContent = MODEL_CONFIG[modelKey].description;
+  }
+
+  if (descriptionTitleElement) {
+    descriptionTitleElement.textContent = MODEL_CONFIG[modelKey].title;
   }
 
   if (terrazzoLink && bagnoLink) {
@@ -150,6 +181,24 @@ function handleNavigationChange() {
   currentModelKey = nextModelKey;
   loadModel(currentModelKey);
 }
+
+if (infoButton instanceof HTMLElement) {
+  infoButton.addEventListener('click', openDescriptionModal);
+}
+
+if (descriptionCloseButton instanceof HTMLElement) {
+  descriptionCloseButton.addEventListener('click', closeDescriptionModal);
+}
+
+if (descriptionBackdrop instanceof HTMLElement) {
+  descriptionBackdrop.addEventListener('click', closeDescriptionModal);
+}
+
+document.addEventListener('keydown', (event) => {
+  if (event.key !== 'Escape') return;
+  if (!descriptionModal || !descriptionModal.classList.contains('open')) return;
+  closeDescriptionModal();
+});
 
 window.addEventListener('popstate', handleNavigationChange);
 
