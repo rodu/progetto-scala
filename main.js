@@ -8,21 +8,25 @@ const MODEL_CONFIG = {
   terrazzo: {
     title: 'Scala Piano Terra',
     fileUrl: terrazzoModelUrl,
-    description: `In questa posizione la scala permette l’accesso al tetto direttamente dal luogo esterno alla casa.
+    description: `
+In questa posizione la scala permette l’accesso al tetto direttamente dal luogo esterno alla casa.
+
 Inoltre, la collocazione al piano terra la rende più sicura e facile da ancorare e installare.
 
 Con questa soluzione, il locale tecnico (chiuso) dovrebbe essere realizzato dove si trovano attualmente le bombole del gas.
+
 Questa soluzione permette un minimo spostamento degli impianti, ma andrebbe a sacrificare la pianta d’ulivo, attualmente collocata nella stessa posizione.`,
   },
   bagno: {
     title: 'Accesso dal Bagno',
     fileUrl: bagnoModelUrl,
-    description: `Creando nell’attuale vano doccia una struttura portante (anche in metallo) abbastanza
-robusta, si crea l’opportunità di posizionarvi al di sopra la scala per accesso al tetto, come
-raffigurato.
-L’accesso alla struttura ed al piano che si viene a creare è previsto principalmente dal
-bagno di sopra.
+    description: `
+Creando nell’attuale vano doccia una struttura portante (anche in metallo) abbastanza robusta, si crea l’opportunità di posizionarvi al di sopra la scala per accesso al tetto, come raffigurato.
+
+L’accesso alla struttura ed al piano che si viene a creare è previsto principalmente dal bagno di sopra.
+
 Per accedere alla scala si prevede una apertura laterale ricavata nel parapetto.
+
 La struttura di piano in metallo utilizzerebbe un angolo smussato nella parte anteriore`,
   },
 };
@@ -64,6 +68,32 @@ let currentModelKey = getModelKeyFromUrl();
 let lastFocusedElement = null;
 let modalScrollY = 0;
 let usingFixedBodyLock = false;
+
+function escapeHtml(value) {
+  return value
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
+}
+
+function formatDescriptionHtml(description) {
+  const trimmed = description.trim();
+  if (!trimmed) return '';
+
+  const hasHtmlTag = /<\/?[a-z][\s\S]*>/i.test(trimmed);
+  if (hasHtmlTag) {
+    return trimmed;
+  }
+
+  return trimmed
+    .split(/\n\s*\n/)
+    .map(
+      (paragraph) => `<p>${escapeHtml(paragraph).replaceAll('\n', '<br>')}</p>`
+    )
+    .join('');
+}
 
 const ambientLight = new THREE.AmbientLight(0xffffff, 1.1);
 scene.add(ambientLight);
@@ -159,7 +189,9 @@ function updateUi(modelKey) {
   const bagnoLink = document.getElementById('model-link-bagno');
 
   if (descriptionElement) {
-    descriptionElement.textContent = MODEL_CONFIG[modelKey].description;
+    descriptionElement.innerHTML = formatDescriptionHtml(
+      MODEL_CONFIG[modelKey].description
+    );
   }
 
   if (descriptionTitleElement) {
