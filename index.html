@@ -2,6 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>Progetto Scala per Accesso al Terrazzo</title>
     <style>
       body {
@@ -14,7 +15,7 @@
         position: fixed;
         top: 16px;
         left: 16px;
-        z-index: 10;
+        z-index: 100;
         display: flex;
         gap: 8px;
         padding: 12px;
@@ -22,6 +23,10 @@
         background: rgba(255, 255, 255, 0.9);
         box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
         backdrop-filter: blur(4px);
+      }
+
+      .viewer-toolbar-toggle {
+        display: none;
       }
 
       .viewer-toolbar a {
@@ -56,29 +61,250 @@
       }
 
       .viewer-description {
-        position: fixed;
-        top: 132px;
-        left: 16px;
-        z-index: 10;
         margin: 0;
-        width: min(420px, calc(100vw - 32px));
-        padding: 10px 12px;
-        border-radius: 10px;
-        background: rgba(255, 255, 255, 0.92);
         color: #1c2e45;
-        font-size: 14px;
-        line-height: 1.4;
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        line-height: 1.5;
+        font-size: 24px;
+      }
+
+      .viewer-description-end-spacer {
+        height: calc(120px + env(safe-area-inset-bottom, 0px));
+      }
+
+      .viewer-info-button {
+        position: fixed;
+        top: 120px;
+        left: 50px;
+        z-index: 110;
+        display: grid;
+        place-items: center;
+        width: 80px;
+        height: 80px;
+        border: none;
+        border-radius: 999px;
+        background: #0a66cc;
+        color: #fff;
+        font-size: 42px;
+        font-weight: 700;
+        line-height: 1;
+        cursor: pointer;
+        box-shadow: 0 8px 22px rgba(10, 102, 204, 0.35);
+      }
+
+      .viewer-info-button:hover {
+        background: #0a5ab4;
+      }
+
+      .viewer-description-modal {
+        position: fixed;
+        inset: 0;
+        z-index: 200;
+        display: none;
+        align-items: stretch;
+        justify-content: stretch;
+        padding: 0;
+      }
+
+      .viewer-description-modal.open {
+        display: flex;
+      }
+
+      .viewer-description-backdrop {
+        position: absolute;
+        inset: 0;
+        background: rgba(10, 20, 36, 0.7);
+      }
+
+      .viewer-description-panel {
+        position: relative;
+        z-index: 1;
+        width: 100vw;
+        height: 100vh;
+        height: 100dvh;
+        max-height: none;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior: contain;
+        border-radius: 0;
+        padding: calc(96px + env(safe-area-inset-top, 0px)) 28px calc(28px + env(safe-area-inset-bottom, 0px));
+        background: #ffffff;
+        box-shadow: none;
+      }
+
+      .viewer-description-header {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        margin-bottom: 20px;
+      }
+
+      .viewer-description-header h2 {
+        margin: 0;
+        color: #1c2e45;
+        font-size: clamp(24px, 3vw, 34px);
+      }
+
+      .viewer-description-close {
+        position: absolute;
+        top: calc(16px + env(safe-area-inset-top, 0px));
+        right: calc(16px + env(safe-area-inset-right, 0px));
+        width: 64px;
+        height: 64px;
+        display: grid;
+        place-items: center;
+        border: none;
+        border-radius: 999px;
+        background: #d7263d;
+        color: #ffffff;
+        font-size: 42px;
+        font-weight: 700;
+        line-height: 1;
+        padding: 0;
+        cursor: pointer;
+        box-shadow: 0 10px 24px rgba(215, 38, 61, 0.42);
+      }
+
+      .viewer-description-close:hover {
+        background: #bd1f34;
+      }
+
+      @media (max-width: 600px) {
+        .viewer-toolbar-toggle {
+          position: fixed;
+          top: calc(12px + env(safe-area-inset-top, 0px));
+          left: 12px;
+          z-index: 130;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          min-height: 56px;
+          padding: 0 18px;
+          border: 1px solid #b8c4d6;
+          border-radius: 12px;
+          background: rgba(255, 255, 255, 0.95);
+          color: #1c2e45;
+          font-size: 18px;
+          font-weight: 700;
+          box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+        }
+
+        body.toolbar-open .viewer-toolbar-toggle {
+          border-color: #1c2e45;
+          background: rgba(28, 46, 69, 0.95);
+          color: #ffffff;
+          box-shadow: 0 10px 22px rgba(0, 0, 0, 0.2);
+        }
+
+        .viewer-toolbar {
+          top: calc(76px + env(safe-area-inset-top, 0px));
+          left: 12px;
+          right: 12px;
+          gap: 12px;
+          padding: 12px;
+          border-radius: 14px;
+          flex-direction: column;
+          transform: translateY(calc(-100% - 20px));
+          opacity: 0;
+          pointer-events: none;
+          transition:
+            transform 220ms ease,
+            opacity 220ms ease;
+        }
+
+        body.toolbar-open .viewer-toolbar {
+          transform: translateY(0);
+          opacity: 1;
+          pointer-events: auto;
+        }
+
+        .viewer-toolbar a {
+          display: block;
+          text-align: center;
+          font-size: 18px;
+          padding: 10px 10px;
+          border-radius: 12px;
+          min-height: 24px;
+        }
+
+        .viewer-info-button {
+          top: auto;
+          left: auto;
+          right: 14px;
+          bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+          width: 72px;
+          height: 72px;
+          font-size: 34px;
+        }
+
+        .viewer-description-panel {
+          width: 100vw;
+          max-height: none;
+          height: 100vh;
+          height: 100dvh;
+          padding: calc(84px + env(safe-area-inset-top, 0px)) 18px calc(24px + env(safe-area-inset-bottom, 0px));
+        }
+
+        .viewer-description-close {
+          top: calc(10px + env(safe-area-inset-top, 0px));
+          right: calc(10px + env(safe-area-inset-right, 0px));
+          width: 58px;
+          height: 58px;
+          font-size: 38px;
+        }
+
+        .viewer-description-end-spacer {
+          height: calc(180px + env(safe-area-inset-bottom, 0px));
+        }
       }
     </style>
-    <script type="module" crossorigin src="./assets/index-DfPxyYuV.js"></script>
+    <script type="module" crossorigin src="./assets/index-COIIoO2D.js"></script>
   </head>
   <body>
+    <button
+      id="viewer-toolbar-toggle"
+      class="viewer-toolbar-toggle"
+      type="button"
+      aria-label="Mostra o nascondi selezione modelli"
+      aria-expanded="false"
+    >
+      Modelli
+    </button>
     <nav class="viewer-toolbar">
       <a id="model-link-terrazzo" href="?model=terrazzo">Scala Piano Terra</a>
       <a id="model-link-bagno" href="?model=bagno">Accesso dal Bagno</a>
     </nav>
-    <h1 id="viewer-title" class="viewer-title">Caricamento modello...</h1>
-    <p id="viewer-description" class="viewer-description">Descrizione modello in caricamento...</p>
+    <button
+      id="viewer-info-button"
+      class="viewer-info-button"
+      type="button"
+      aria-label="Mostra descrizione del modello"
+    >
+      i
+    </button>
+    <div
+      id="viewer-description-modal"
+      class="viewer-description-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="viewer-description-title"
+      aria-hidden="true"
+    >
+      <div id="viewer-description-backdrop" class="viewer-description-backdrop"></div>
+      <section class="viewer-description-panel" aria-live="polite">
+        <header class="viewer-description-header">
+          <h2 id="viewer-description-title">Descrizione modello</h2>
+          <button
+            id="viewer-description-close"
+            class="viewer-description-close"
+            type="button"
+            aria-label="Chiudi descrizione"
+          >
+            &times;
+          </button>
+        </header>
+        <p id="viewer-description" class="viewer-description">Descrizione modello in caricamento...</p>
+        <div class="viewer-description-end-spacer" aria-hidden="true"></div>
+      </section>
+    </div>
   </body>
 </html>
