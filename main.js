@@ -63,6 +63,7 @@ const loader = new GLTFLoader();
 let currentModel = null;
 let currentModelKey = getModelKeyFromUrl();
 let lastFocusedElement = null;
+let modalScrollY = 0;
 
 const ambientLight = new THREE.AmbientLight(0xffffff, 1.1);
 scene.add(ambientLight);
@@ -85,6 +86,13 @@ const descriptionBackdrop = document.getElementById(
 function openDescriptionModal() {
   if (!descriptionModal) return;
   lastFocusedElement = document.activeElement;
+  modalScrollY = window.scrollY;
+  document.body.style.position = 'fixed';
+  document.body.style.top = `-${modalScrollY}px`;
+  document.body.style.left = '0';
+  document.body.style.right = '0';
+  document.body.style.width = '100%';
+  document.body.style.overflow = 'hidden';
   descriptionModal.classList.add('open');
   descriptionModal.setAttribute('aria-hidden', 'false');
   if (descriptionCloseButton instanceof HTMLElement) {
@@ -96,6 +104,13 @@ function closeDescriptionModal() {
   if (!descriptionModal) return;
   descriptionModal.classList.remove('open');
   descriptionModal.setAttribute('aria-hidden', 'true');
+  document.body.style.position = '';
+  document.body.style.top = '';
+  document.body.style.left = '';
+  document.body.style.right = '';
+  document.body.style.width = '';
+  document.body.style.overflow = '';
+  window.scrollTo(0, modalScrollY);
   if (lastFocusedElement instanceof HTMLElement) {
     lastFocusedElement.focus();
   }
