@@ -12,8 +12,7 @@ const MODEL_CONFIG = {
 Inoltre, la collocazione al piano terra la rende più sicura e facile da ancorare e installare.
 
 Con questa soluzione, il locale tecnico (chiuso) dovrebbe essere realizzato dove si trovano attualmente le bombole del gas.
-Questa soluzione permette un minimo spostamento degli impianti, ma andrebbe a sacrificare la pianta d’ulivo, attualmente collocata nella stessa posizione.
-Inserisci qui la descrizione del modello Scala Piano Terra.`,
+Questa soluzione permette un minimo spostamento degli impianti, ma andrebbe a sacrificare la pianta d’ulivo, attualmente collocata nella stessa posizione.`,
   },
   bagno: {
     title: 'Accesso dal Bagno',
