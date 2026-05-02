@@ -2,6 +2,10 @@
 
 Three.js app powered by Vite.
 
+## Live Demo
+
+https://rodu.github.io/progetto-scala/
+
 ## Install
 
 ```bash
