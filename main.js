@@ -64,6 +64,7 @@ let currentModel = null;
 let currentModelKey = getModelKeyFromUrl();
 let lastFocusedElement = null;
 let modalScrollY = 0;
+let usingFixedBodyLock = false;
 
 const ambientLight = new THREE.AmbientLight(0xffffff, 1.1);
 scene.add(ambientLight);
@@ -75,6 +76,7 @@ scene.add(dirLight);
 const center = new THREE.Vector3();
 
 const infoButton = document.getElementById('viewer-info-button');
+const toolbarToggleButton = document.getElementById('viewer-toolbar-toggle');
 const descriptionModal = document.getElementById('viewer-description-modal');
 const descriptionCloseButton = document.getElementById(
   'viewer-description-close'
@@ -83,16 +85,41 @@ const descriptionBackdrop = document.getElementById(
   'viewer-description-backdrop'
 );
 
+function isMobileLayout() {
+  return window.matchMedia('(max-width: 600px)').matches;
+}
+
+function setToolbarExpanded(expanded) {
+  if (!toolbarToggleButton) return;
+  document.body.classList.toggle('toolbar-open', expanded);
+  toolbarToggleButton.setAttribute('aria-expanded', String(expanded));
+}
+
+function closeToolbarIfMobile() {
+  if (!isMobileLayout()) return;
+  setToolbarExpanded(false);
+}
+
+function shouldUseFixedBodyLock() {
+  return !isMobileLayout();
+}
+
 function openDescriptionModal() {
   if (!descriptionModal) return;
+  closeToolbarIfMobile();
   lastFocusedElement = document.activeElement;
+
+  usingFixedBodyLock = shouldUseFixedBodyLock();
   modalScrollY = window.scrollY;
-  document.body.style.position = 'fixed';
-  document.body.style.top = `-${modalScrollY}px`;
-  document.body.style.left = '0';
-  document.body.style.right = '0';
-  document.body.style.width = '100%';
+  if (usingFixedBodyLock) {
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${modalScrollY}px`;
+    document.body.style.left = '0';
+    document.body.style.right = '0';
+    document.body.style.width = '100%';
+  }
   document.body.style.overflow = 'hidden';
+
   descriptionModal.classList.add('open');
   descriptionModal.setAttribute('aria-hidden', 'false');
   if (descriptionCloseButton instanceof HTMLElement) {
@@ -104,13 +131,21 @@ function closeDescriptionModal() {
   if (!descriptionModal) return;
   descriptionModal.classList.remove('open');
   descriptionModal.setAttribute('aria-hidden', 'true');
-  document.body.style.position = '';
-  document.body.style.top = '';
-  document.body.style.left = '';
-  document.body.style.right = '';
-  document.body.style.width = '';
+
+  if (usingFixedBodyLock) {
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.left = '';
+    document.body.style.right = '';
+    document.body.style.width = '';
+  }
   document.body.style.overflow = '';
-  window.scrollTo(0, modalScrollY);
+
+  if (usingFixedBodyLock) {
+    window.scrollTo(0, modalScrollY);
+  }
+  usingFixedBodyLock = false;
+
   if (lastFocusedElement instanceof HTMLElement) {
     lastFocusedElement.focus();
   }
@@ -201,6 +236,14 @@ if (infoButton instanceof HTMLElement) {
   infoButton.addEventListener('click', openDescriptionModal);
 }
 
+if (toolbarToggleButton instanceof HTMLElement) {
+  toolbarToggleButton.addEventListener('click', () => {
+    const isExpanded =
+      toolbarToggleButton.getAttribute('aria-expanded') === 'true';
+    setToolbarExpanded(!isExpanded);
+  });
+}
+
 if (descriptionCloseButton instanceof HTMLElement) {
   descriptionCloseButton.addEventListener('click', closeDescriptionModal);
 }
@@ -235,6 +278,13 @@ document.addEventListener('click', (event) => {
   currentModelKey = modelFromQuery;
   history.pushState({}, '', `?model=${modelFromQuery}`);
   loadModel(currentModelKey);
+  closeToolbarIfMobile();
+});
+
+window.addEventListener('resize', () => {
+  if (!isMobileLayout()) {
+    setToolbarExpanded(false);
+  }
 });
 
 loadModel(currentModelKey);
