@@ -1,11 +1,13 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import terrazzoModelUrl from './scala-piano-terra.glb?url';
+import bagnoModelUrl from './accssso-dal-bagno.glb?url';
 
 const MODEL_CONFIG = {
   terrazzo: {
     title: 'Scala Piano Terra',
-    file: './scala-piano-terra.glb',
+    fileUrl: terrazzoModelUrl,
     description: `In questa posizione la scala permette l’accesso al tetto direttamente dal luogo esterno alla casa.
 Inoltre, la collocazione al piano terra la rende più sicura e facile da ancorare e installare.
 
@@ -15,7 +17,7 @@ Inserisci qui la descrizione del modello Scala Piano Terra.`,
   },
   bagno: {
     title: 'Accesso dal Bagno',
-    file: './accssso-dal-bagno.glb',
+    fileUrl: bagnoModelUrl,
     description: `Creando nell’attuale vano doccia una struttura portante (anche in metallo) abbastanza
 robusta, si crea l’opportunità di posizionarvi al di sopra la scala per accesso al tetto, come
 raffigurato.
@@ -122,11 +124,10 @@ function loadModel(modelKey) {
   const modelEntry = MODEL_CONFIG[modelKey];
   if (!modelEntry) return;
 
-  const modelUrl = new URL(modelEntry.file, import.meta.url).href;
   updateUi(modelKey);
 
   loader.load(
-    modelUrl,
+    modelEntry.fileUrl,
     function (gltf) {
       if (currentModel) {
         scene.remove(currentModel);
