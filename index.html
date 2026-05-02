@@ -54,6 +54,22 @@
         font-size: 16px;
         font-weight: 600;
       }
+
+      .viewer-description {
+        position: fixed;
+        top: 132px;
+        left: 16px;
+        z-index: 10;
+        margin: 0;
+        width: min(420px, calc(100vw - 32px));
+        padding: 10px 12px;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.92);
+        color: #1c2e45;
+        font-size: 14px;
+        line-height: 1.4;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+      }
     </style>
   </head>
   <body>
@@ -62,6 +78,7 @@
       <a id="model-link-bagno" href="?model=bagno">Accesso dal Bagno</a>
     </nav>
     <h1 id="viewer-title" class="viewer-title">Caricamento modello...</h1>
+    <p id="viewer-description" class="viewer-description">Descrizione modello in caricamento...</p>
     <script type="module" src="/main.js"></script>
   </body>
 </html>

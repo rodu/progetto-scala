@@ -6,10 +6,23 @@ const MODEL_CONFIG = {
   terrazzo: {
     title: 'Scala Piano Terra',
     file: './scala-piano-terra.glb',
+    description: `In questa posizione la scala permette l’accesso al tetto direttamente dal luogo esterno alla casa.
+Inoltre, la collocazione al piano terra la rende più sicura e facile da ancorare e installare.
+
+Con questa soluzione, il locale tecnico (chiuso) dovrebbe essere realizzato dove si trovano attualmente le bombole del gas.
+Questa soluzione permette un minimo spostamento degli impianti, ma andrebbe a sacrificare la pianta d’ulivo, attualmente collocata nella stessa posizione.
+Inserisci qui la descrizione del modello Scala Piano Terra.`,
   },
   bagno: {
     title: 'Accesso dal Bagno',
     file: './accssso-dal-bagno.glb',
+    description: `Creando nell’attuale vano doccia una struttura portante (anche in metallo) abbastanza
+robusta, si crea l’opportunità di posizionarvi al di sopra la scala per accesso al tetto, come
+raffigurato.
+L’accesso alla struttura ed al piano che si viene a creare è previsto principalmente dal
+bagno di sopra.
+Per accedere alla scala si prevede una apertura laterale ricavata nel parapetto.
+La struttura di piano in metallo utilizzerebbe un angolo smussato nella parte anteriore`,
   },
 };
 
@@ -59,11 +72,16 @@ const center = new THREE.Vector3();
 
 function updateUi(modelKey) {
   const titleElement = document.getElementById('viewer-title');
+  const descriptionElement = document.getElementById('viewer-description');
   const terrazzoLink = document.getElementById('model-link-terrazzo');
   const bagnoLink = document.getElementById('model-link-bagno');
 
   if (titleElement) {
     titleElement.textContent = `Vista corrente: ${MODEL_CONFIG[modelKey].title}`;
+  }
+
+  if (descriptionElement) {
+    descriptionElement.textContent = MODEL_CONFIG[modelKey].description;
   }
 
   if (terrazzoLink && bagnoLink) {
