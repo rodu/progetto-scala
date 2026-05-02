@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0xf2f4f8);
@@ -16,6 +17,12 @@ const renderer = new THREE.WebGLRenderer();
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.08;
+controls.minDistance = 0.05;
+controls.maxDistance = 200;
 
 const loader = new GLTFLoader();
 const modelUrl = new URL('./scala-piano-terra.glb', import.meta.url).href;
@@ -47,10 +54,14 @@ function fitCameraToObject(object) {
         .normalize()
         .multiplyScalar(distance * 1.8)
     );
-  camera.near = Math.max(distance / 100, 0.01);
+  camera.near = Math.max(maxDim / 1000, 0.001);
   camera.far = distance * 100;
   camera.lookAt(center);
   camera.updateProjectionMatrix();
+  controls.target.copy(center);
+  controls.minDistance = Math.max(maxDim * 0.01, 0.01);
+  controls.maxDistance = distance * 10;
+  controls.update();
 }
 
 loader.load(
@@ -73,6 +84,7 @@ window.addEventListener('resize', () => {
 
 function animate() {
   requestAnimationFrame(animate);
+  controls.update();
   renderer.render(scene, camera);
 }
 
