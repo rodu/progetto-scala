@@ -2,6 +2,26 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
+const MODEL_CONFIG = {
+  terrazzo: {
+    title: 'Scala Piano Terra',
+    file: './scala-piano-terra.glb',
+  },
+  bagno: {
+    title: 'Accesso dal Bagno',
+    file: './accssso-dal-bagno.glb',
+  },
+};
+
+const DEFAULT_MODEL_KEY = 'terrazzo';
+
+function getModelKeyFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const requested = params.get('model');
+  if (requested && MODEL_CONFIG[requested]) return requested;
+  return DEFAULT_MODEL_KEY;
+}
+
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0xf2f4f8);
 
@@ -25,7 +45,8 @@ controls.minDistance = 0.05;
 controls.maxDistance = 200;
 
 const loader = new GLTFLoader();
-const modelUrl = new URL('./scala-piano-terra.glb', import.meta.url).href;
+let currentModel = null;
+let currentModelKey = getModelKeyFromUrl();
 
 const ambientLight = new THREE.AmbientLight(0xffffff, 1.1);
 scene.add(ambientLight);
@@ -35,6 +56,21 @@ dirLight.position.set(6, 10, 8);
 scene.add(dirLight);
 
 const center = new THREE.Vector3();
+
+function updateUi(modelKey) {
+  const titleElement = document.getElementById('viewer-title');
+  const terrazzoLink = document.getElementById('model-link-terrazzo');
+  const bagnoLink = document.getElementById('model-link-bagno');
+
+  if (titleElement) {
+    titleElement.textContent = `Vista corrente: ${MODEL_CONFIG[modelKey].title}`;
+  }
+
+  if (terrazzoLink && bagnoLink) {
+    terrazzoLink.classList.toggle('active', modelKey === 'terrazzo');
+    bagnoLink.classList.toggle('active', modelKey === 'bagno');
+  }
+}
 
 function fitCameraToObject(object) {
   const box = new THREE.Box3().setFromObject(object);
@@ -64,17 +100,61 @@ function fitCameraToObject(object) {
   controls.update();
 }
 
-loader.load(
-  modelUrl,
-  function (gltf) {
-    scene.add(gltf.scene);
-    fitCameraToObject(gltf.scene);
-  },
-  undefined,
-  function (error) {
-    console.error(error);
-  }
-);
+function loadModel(modelKey) {
+  const modelEntry = MODEL_CONFIG[modelKey];
+  if (!modelEntry) return;
+
+  const modelUrl = new URL(modelEntry.file, import.meta.url).href;
+  updateUi(modelKey);
+
+  loader.load(
+    modelUrl,
+    function (gltf) {
+      if (currentModel) {
+        scene.remove(currentModel);
+      }
+
+      currentModel = gltf.scene;
+      scene.add(currentModel);
+      fitCameraToObject(currentModel);
+    },
+    undefined,
+    function (error) {
+      console.error(error);
+    }
+  );
+}
+
+function handleNavigationChange() {
+  const nextModelKey = getModelKeyFromUrl();
+  if (nextModelKey === currentModelKey) return;
+  currentModelKey = nextModelKey;
+  loadModel(currentModelKey);
+}
+
+window.addEventListener('popstate', handleNavigationChange);
+
+document.addEventListener('click', (event) => {
+  const target = event.target;
+  if (!(target instanceof HTMLAnchorElement)) return;
+
+  const modelFromQuery = new URL(
+    target.href,
+    window.location.origin
+  ).searchParams.get('model');
+
+  if (!modelFromQuery || !MODEL_CONFIG[modelFromQuery]) return;
+
+  event.preventDefault();
+
+  if (modelFromQuery === currentModelKey) return;
+
+  currentModelKey = modelFromQuery;
+  history.pushState({}, '', `?model=${modelFromQuery}`);
+  loadModel(currentModelKey);
+});
+
+loadModel(currentModelKey);
 
 window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth / window.innerHeight;
