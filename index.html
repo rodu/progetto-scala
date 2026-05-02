@@ -1,13 +1,84 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
-    <meta charset="utf-8">
-    <title>My first three.js app</title>
+    <meta charset="utf-8" />
+    <title>Progetto Scala per Accesso al Terrazzo</title>
     <style>
-      body { margin: 0; }
+      body {
+        margin: 0;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: #f2f4f8;
+      }
+
+      .viewer-toolbar {
+        position: fixed;
+        top: 16px;
+        left: 16px;
+        z-index: 10;
+        display: flex;
+        gap: 8px;
+        padding: 12px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.9);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+        backdrop-filter: blur(4px);
+      }
+
+      .viewer-toolbar a {
+        text-decoration: none;
+        color: #1c2e45;
+        border: 1px solid #b8c4d6;
+        border-radius: 8px;
+        padding: 8px 10px;
+        font-size: 14px;
+        font-weight: 600;
+        background: #fff;
+      }
+
+      .viewer-toolbar a.active {
+        background: #1c2e45;
+        color: #fff;
+        border-color: #1c2e45;
+      }
+
+      .viewer-title {
+        position: fixed;
+        top: 84px;
+        left: 16px;
+        z-index: 10;
+        margin: 0;
+        padding: 8px 12px;
+        border-radius: 10px;
+        background: rgba(28, 46, 69, 0.9);
+        color: #fff;
+        font-size: 16px;
+        font-weight: 600;
+      }
+
+      .viewer-description {
+        position: fixed;
+        top: 132px;
+        left: 16px;
+        z-index: 10;
+        margin: 0;
+        width: min(420px, calc(100vw - 32px));
+        padding: 10px 12px;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.92);
+        color: #1c2e45;
+        font-size: 14px;
+        line-height: 1.4;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+      }
     </style>
-    <script type="module" crossorigin src="./assets/index-i6DwBaVN.js"></script>
+    <script type="module" crossorigin src="./assets/index-DS_0a1nG.js"></script>
   </head>
   <body>
+    <nav class="viewer-toolbar">
+      <a id="model-link-terrazzo" href="?model=terrazzo">Scala Piano Terra</a>
+      <a id="model-link-bagno" href="?model=bagno">Accesso dal Bagno</a>
+    </nav>
+    <h1 id="viewer-title" class="viewer-title">Caricamento modello...</h1>
+    <p id="viewer-description" class="viewer-description">Descrizione modello in caricamento...</p>
   </body>
 </html>
