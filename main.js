@@ -11,23 +11,19 @@ const MODEL_CONFIG = {
     description: `
 In questa posizione la scala permette l’accesso al tetto direttamente dal luogo esterno alla casa.
 
-Inoltre, la collocazione al piano terra la rende più sicura e facile da ancorare e installare.
+Inoltre, la collocazione al piano terra rende la scala più sicura e facile da ancorare e installare, anche se più alta.
 
-Con questa soluzione, il locale tecnico (chiuso) dovrebbe essere realizzato dove si trovano attualmente le bombole del gas.
-
-Questa soluzione permette un minimo spostamento degli impianti, ma andrebbe a sacrificare la pianta d’ulivo, attualmente collocata nella stessa posizione.`,
+Con questa soluzione, il locale tecnico (dove spostare gli impianti) dovrebbe essere realizzato in altro luogo appropriato.`,
   },
   bagno: {
     title: 'Accesso dal Bagno',
     fileUrl: bagnoModelUrl,
     description: `
-Creando nell’attuale vano doccia una struttura portante (anche in metallo) abbastanza robusta, si crea l’opportunità di posizionarvi al di sopra la scala per accesso al tetto, come raffigurato.
+Creando nell’attuale vano doccia una struttura portante (anche in metallo) abbastanza robusta, si crea l’opportunità di realizzare un locale tecnico coperto, dove spostare gli impianti e posizionarvi al di sopra la scala per accesso al tetto.
 
-L’accesso alla struttura ed al piano che si viene a creare è previsto principalmente dal bagno di sopra.
+L’accesso alla struttura ed al piano che si viene a creare è previsto principalmente dal bagno di sopra. Per accedere alla scala si prevede una apertura laterale ricavata nel parapetto del balcone per accedere ad un piano (con ringhiera) che conduce alla scala.
 
-Per accedere alla scala si prevede una apertura laterale ricavata nel parapetto.
-
-La struttura di piano in metallo utilizzerebbe un angolo smussato nella parte anteriore`,
+La struttura di piano in metallo utilizzerebbe un angolo smussato nella parte anteriore per ridurre l'ingombro.`,
   },
 };
 
